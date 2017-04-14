@@ -18,7 +18,7 @@ install_github("dongjunchung/bayesGO")
 Usage
 ===========
 
-The following two help pages will also provide quick references for PICS package and the example command lines:
+The following two help pages will also provide quick references for bayesGO package and the example command lines:
 
 ```
 package?bayesGO
