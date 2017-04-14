@@ -1,6 +1,6 @@
 # bayesGO
 bayesGO: Bayesian ontology fingerprint, a statistical framework for biomedical literature mining 
-===
+===========
 
 bayesGO is a statistical framework for the analysis of biomedical literature text mining data.
 
