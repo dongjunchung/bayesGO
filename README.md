@@ -8,7 +8,7 @@ bayesGO is a statistical framework for the analysis of biomedical literature tex
 Installation
 ===========
 
-To install the development version of PICS, it's easiest to use the 'devtools' package.
+To install the development version of PICS, it's easiest to use the 'devtools' package. Note that bayesGO depends on the 'rjags' package, which requires installation of the JAGS software (http://mcmc-jags.sourceforge.net/).
 
 ```
 #install.packages("devtools")
