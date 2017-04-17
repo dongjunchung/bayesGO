@@ -1,0 +1,103 @@
+model
+{
+	# Input
+	# - Kmax: Max possible # gene clusters
+	# - G: # genes
+	# - T: # GO terms
+	
+	# Data
+	# - X: KEGG network (G * G)
+	# - Y: Hypergeometric test p-value (T * G)
+	
+	# Hyperparameter
+	# - paramGammaStar, paramEta
+	# - paramAlpha0, paramAlpha1, paramAlpha2
+	# - paramPi1
+	# - paramBeta0, paramBeta1
+	# - paramDelta
+	# - paramPsi
+	
+	# Membership of t-th GO term to GO term cluster
+	
+	beta0 ~ dgamma( paramBeta0[1], paramBeta0[2] )I( 1, )
+	epsilon ~ dbeta( paramEpsilon[1], paramEpsilon[2] )I( 0.001, 0.999 )
+	
+	for ( v in 1:Vmax ) {		
+		lambda[v] ~ dbern( epsilon )
+		betaStarOrg[v] ~ dgamma( beta0, 1 )
+		betaStar[v] <- betaStarOrg[v] / sum( betaStarOrg[1:Vmax] )
+		betaOrg[v] <- lambda[v] * betaStar[v]
+		beta[v] <- betaOrg[v] / sum( betaOrg[1:Vmax] )
+	}	
+		# number of classes
+		
+	lambdaSum <- sum( lambda[1:Vmax] )
+	
+		# Generate membership
+	
+	for ( t in 1:T ) {
+		L[t] ~ dcat( beta[1:Vmax] )	
+	}
+	
+	# Membership of i-th gene to gene cluster
+	
+	alpha0 ~ dgamma( paramAlpha0[1], paramAlpha0[2] )I( 1, )
+	eta ~ dbeta( paramEta[1], paramEta[2] )I( 0.001, 0.999 )
+	
+	for ( k in 1:Kmax ) {		
+		phi[k] ~ dbern( eta )
+		alphaStarOrg[k] ~ dgamma( alpha0, 1 )
+		alphaStar[k] <- alphaStarOrg[k] / sum( alphaStarOrg[1:Kmax] )
+		alphaOrg[k] <- phi[k] * alphaStar[k]
+		alpha[k] <- alphaOrg[k] / sum( alphaOrg[1:Kmax] )
+	}	
+	
+		# number of classes
+		
+	phiSum <- sum( phi[1:Kmax] )
+	
+		# Generate membership
+	
+	for ( i in 1:G ) {
+		M[i] ~ dcat( alpha[1:Kmax] )		
+	}
+	
+	# Enrichment of t-th GO term for i-th gene
+	
+	theta01 ~ dgamma( paramTheta01[1], paramTheta01[2] )I( 1, )
+	theta02 ~ dgamma( paramTheta02[1], paramTheta02[2] )I( 1, )
+	
+	for ( v in 1:Vmax ) {
+		for ( k in 1:Kmax ) {
+			theta[v,k] ~ dbeta( theta01, theta02 )
+		}
+	}
+	
+	for ( n in 1:N ) {
+		E[n] ~ dbern( theta[ L[ rind[n] ], M[ cind[n] ] ] )
+	}
+	
+	# Mean and SD for mixture
+	
+	zeta0 ~ dnorm( paramZeta0[1], paramZeta0[2] )
+	xi0 ~ dgamma( paramXi0[1], paramXi0[2] )
+	
+	zeta1 ~ dnorm( paramZeta1[1], paramZeta1[2] )
+	xi1 ~ dgamma( paramXi1[1], paramXi1[2] )
+	
+	for ( i in 1:G ) {
+		mu0[i] ~ dnorm( zeta0, xi0 )T( -5, 0 )
+		tau0[i] ~ dgamma( paramTau0[1], paramTau0[2] )
+		
+		mu1[i] ~ dnorm( zeta1, xi1 )T( , 0 )
+		tau1[i] ~ dgamma( paramTau1[1], paramTau1[2] )
+	}
+	
+	# Hypergeometric test p-value for t-th GO term and i-th gene in gene pair i and j
+	
+	for ( n in 1:N ) {
+		muf[n] <- ( 1 - E[n] ) * mu0[ cind[n] ] + E[n] * mu1[ cind[n] ]
+		tauf[n] <- ( 1 - E[n] ) * tau0[ cind[n] ] + E[n] * tau1[ cind[n] ]
+		Y[n] ~ dnorm( muf[n], tauf[n] )
+	}
+}

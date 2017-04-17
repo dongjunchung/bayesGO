@@ -1,0 +1,22 @@
+Package: bayesGO
+Version: 0.1-1
+Date: 2017-04-15
+Title: bayesGO (Bayesian modeling of Gene Ontology fingerprint)
+Author: Dongjun Chung <dongjun.chung@gmail.com>
+Maintainer: Dongjun Chung <dongjun.chung@gmail.com>
+Depends:
+    R (>= 2.14)
+Imports:
+    stats,
+    methods,
+    graphics,
+    pheatmap,
+	rjags,
+	coda,
+	label.switching
+Description: This package provides functions for fitting bayesGO, a Bayesian
+    framework for identification of novel pathway-modulating genes.
+LazyData: true
+License: GPL (>= 2)
+Encoding: UTF-8
+RoxygenNote: 6.0.1
