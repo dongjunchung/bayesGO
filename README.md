@@ -19,4 +19,4 @@ install_github("dongjunchung/bayesGO")
 References
 ==========
 
-Chung D, Lawson A, Zheng WJ (2016), "A statistical framework for biomedical literature mining."
+Chung D, Lawson A, Zheng WJ (2016), "A statistical framework for biomedical literature mining." To appear in Statistics in Medicine.
