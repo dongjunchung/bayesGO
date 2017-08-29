@@ -72,7 +72,7 @@ setMethod(
     
     # gene and GO term clustering results
     
-    pred.gene <- split( gene.name[ chain.gene.prop > thresGene ], chain.term[ chain.gene.prop > thresGene ] )
+    pred.gene <- split( gene.name[ chain.gene.prop > thresGene ], chain.gene[ chain.gene.prop > thresGene ] )
     pred.term <- split( term.name[ chain.term.prop > thresTerm ], chain.term[ chain.term.prop > thresTerm ] )
 
     return(list(
