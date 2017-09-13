@@ -1,6 +1,6 @@
 Package: bayesGO
-Version: 0.1-1
-Date: 2017-04-15
+Version: 0.2-0
+Date: 2017-09-30
 Title: bayesGO (Bayesian modeling of Gene Ontology fingerprint)
 Author: Dongjun Chung <dongjun.chung@gmail.com>
 Maintainer: Dongjun Chung <dongjun.chung@gmail.com>

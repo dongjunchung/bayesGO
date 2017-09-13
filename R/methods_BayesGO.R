@@ -18,6 +18,9 @@ setMethod(
     emat <- object@out$chain.enrichment
     vDigit <- 100
     
+    chain.gene <- object@out$chain.col
+    chain.term <- object@out$chain.row
+    
     cat( "Summary: Bayesian ontology fingerprint analysis results (class: BayesGO)\n" )
     cat( "--------------------------------------------------\n" )
     cat( "Model settings:\n")
@@ -27,11 +30,13 @@ setMethod(
     cat( "Maximum possible number of GO term clusters: ", object@init$V, "\n", sep="" )
     cat( "--------------------------------------------------\n" )
     cat( "Data analysis results:\n")
-    cat( "Median number of gene clusters: ", median(object@out$chain.phiSum), "\n", sep="" )
-    cat( "Median number of GO term clusters: ", median(object@out$chain.lambdaSum), "\n", sep="" )
+    #cat( "Median number of gene clusters: ", median(object@out$chain.phiSum), "\n", sep="" )
+    #cat( "Median number of GO term clusters: ", median(object@out$chain.lambdaSum), "\n", sep="" )
+    cat( "Median number of gene clusters: ", length(unique(chain.gene)), "\n", sep="" )
+    cat( "Median number of GO term clusters: ", length(unique(chain.term)), "\n", sep="" )
 		cat( "Association between GO terms (rows) and genes (columns):\n" )
 		for ( i in 1:nrow(emat) ) { 
-			cat( "\t    ", paste( round(emat[i,]*vDigit)/vDigit, collapse="\t" ), "\n", sep="" )
+			cat( "\t    ", format( paste( round(emat[i,]*vDigit)/vDigit, nsmall=2 ), collapse="\t" ), "\n", sep="" )
 		}
     cat( "--------------------------------------------------\n" )
   }
@@ -51,7 +56,7 @@ setMethod(
 setMethod(
   f="predict",
   signature="BayesGO",
-  definition=function( object, thresGene=0.9, thresTerm=0.9 ) {
+  definition=function( object, thresGene=0, thresTerm=0 ) {
 
     # extract objects
     
@@ -71,9 +76,15 @@ setMethod(
     chain.term.prop <- object@out$chain.row.prop
     
     # gene and GO term clustering results
+
+    mat.gene <- data.frame( gene.name, chain.gene.prop )[ chain.gene.prop > thresGene, ]
+    mat.term <- data.frame( term.name, chain.term.prop )[ chain.term.prop > thresTerm, ]
     
-    pred.gene <- split( gene.name[ chain.gene.prop > thresGene ], chain.gene[ chain.gene.prop > thresGene ] )
-    pred.term <- split( term.name[ chain.term.prop > thresTerm ], chain.term[ chain.term.prop > thresTerm ] )
+    pred.gene <- split( mat.gene, chain.gene[ chain.gene.prop > thresGene ] )
+    pred.term <- split( mat.term, chain.term[ chain.term.prop > thresTerm ] )
+    
+    pred.gene <- lapply( pred.gene, function(x) x[ order( x[,2], decreasing=TRUE ), ] )
+    pred.term <- lapply( pred.term, function(x) x[ order( x[,2], decreasing=TRUE ), ] )
 
     return(list(
       geneClust = pred.gene,
@@ -97,13 +108,26 @@ setMethod(
 setMethod(
   f="plot",
   signature=c("BayesGO","missing"),
-  definition=function( x, y, thresGene=0.9, thresTerm=0.9 ) {
+  definition=function( x, y, thresGene=0, thresTerm=0 ) {
 
     # extract objects
     
     chain.gene <- x@out$chain.col
     chain.term <- x@out$chain.row
     chain.emat <- x@out$chain.emat
+    
+    chain.gene.prop <- x@out$chain.col.prop
+    chain.term.prop <- x@out$chain.row.prop
+    
+    n.gene.cluster <- length(chain.gene.uniq)
+    n.term.cluster <- length(chain.term.uniq)
+    
+    for ( i in 1:n.gene.cluster ) {
+      chain.gene[ chain.gene == chain.gene.uniq[i] ] <- i
+    }
+    for ( i in 1:n.term.cluster ) {
+      chain.term[ chain.term == chain.term.uniq[i] ] <- i
+    }
     
     chain.gene.prop <- x@out$chain.col.prop
     chain.term.prop <- x@out$chain.row.prop
@@ -117,6 +141,7 @@ setMethod(
     colcol[ chain.gene.prop < thresGene ] <- NA
 
     E2 <- chain.emat
+    E2[ is.na(E2) ] <- 0.5
     rownames(E2) <- paste("term",1:nrow(chain.emat),sep="")
     colnames(E2) <- paste("gene",1:ncol(chain.emat),sep="")
     
@@ -127,6 +152,8 @@ setMethod(
     colcol2 <- as.data.frame( colcol, stringsAsFactors=FALSE )
     rownames(colcol2) <- paste("gene",1:ncol(chain.emat),sep="")
     colnames(colcol2) <- "M  "
+    
+    E2 <- E2[ order(colrow2[,1]), order(colcol2[,1]) ]
     
     pheatmap( E2, cluster_rows=FALSE, cluster_cols=FALSE, scale="none", 
       show_rownames = FALSE, show_colnames = FALSE,

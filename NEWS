@@ -1,0 +1,17 @@
+   
+Changes in version 0.2-0:
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+   o show(): Improve presentation of the model fitting results.
+   
+   o predicxt(): Incorporate assignment probabilities and order genes and GO terms 
+		by their assignment probabilities to facilitate easier interpretation.
+		Change default values for thresGene and thresTerm to zeros.
+   
+   o plot(): In the heatmap, order genes and GO terms by their group indices. Fill in missing cells with p-value = 0.5.
+		Change default values for thresGene and thresTerm to zeros.
+
+Changes in version 0.1-1:
+
+   o The first version of bayesGO R package.
