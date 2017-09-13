@@ -36,7 +36,7 @@ setMethod(
     cat( "Median number of GO term clusters: ", length(unique(chain.term)), "\n", sep="" )
 		cat( "Association between GO terms (rows) and genes (columns):\n" )
 		for ( i in 1:nrow(emat) ) { 
-			cat( "\t    ", format( paste( round(emat[i,]*vDigit)/vDigit, nsmall=2 ), collapse="\t" ), "\n", sep="" )
+			cat( "\t    ", paste( format( round(emat[i,]*vDigit)/vDigit, nsmall=2 ), collapse="\t" ), "\n", sep="" )
 		}
     cat( "--------------------------------------------------\n" )
   }
@@ -116,8 +116,8 @@ setMethod(
     chain.term <- x@out$chain.row
     chain.emat <- x@out$chain.emat
     
-    chain.gene.prop <- x@out$chain.col.prop
-    chain.term.prop <- x@out$chain.row.prop
+    chain.gene.uniq <- sort(unique(chain.gene))
+    chain.term.uniq <- sort(unique(chain.term))
     
     n.gene.cluster <- length(chain.gene.uniq)
     n.term.cluster <- length(chain.term.uniq)
