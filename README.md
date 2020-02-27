@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3687184.svg)](https://doi.org/10.5281/zenodo.3687184)
+
 # bayesGO
 bayesGO: Bayesian ontology fingerprint, a statistical framework for biomedical literature mining 
 
